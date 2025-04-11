@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Telegram机器人检测用户是否加入指定频道/群组 | muse</title>
+
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../../css/main.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- 添加代码高亮样式 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="../../../../css/code.css">
+  <link rel="stylesheet" href="../../../../css/vscode.css">
+  <link rel="stylesheet" href="../../../../css/post.css">
+  <link rel="stylesheet" href="../../../../css/tag.css">
+  <link rel="stylesheet" href="../../../../css/categories.css">
+  <link rel="stylesheet" href="../../../../css/archive.css">
+  <link rel="stylesheet" href="../../../../css/search.css">
+  <link rel="stylesheet" href="../../../../css/mobile.css">
+  <link rel="stylesheet" href="../../../../css/responsive.css">
+
+  <!-- 添加 JetBrains Mono 字体 -->  
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Add any custom head content here -->
+
+  <script src="../../../../js/explorer.js"></script>
+  <script src="../../../../js/code-copy.js"></script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+  <body>
+    <div class="wrapper">
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <header class="vs-header">
+  <nav class="vs-nav">
+    <div class="nav-left">
+      <a href="/" class="nav-brand">
+        <i class="fas fa-terminal"></i>
+        muse
+      </a>
+    </div>
+    
+    <div class="nav-right">
+      <a href="/" class="nav-item ">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="/archives/" class="nav-item ">
+        <i class="fas fa-archive"></i>
+        <span>Archives</span>
+      </a>
+      <a href="/categories/" class="nav-item ">
+        <i class="fas fa-folder"></i>
+        <span>Categories</span>
+      </a>
+      <a href="/tags/" class="nav-item ">
+        <i class="fas fa-tags"></i>
+        <span>Tags</span>
+      </a>
+      <a href="/search/" class="nav-item ">
+        <i class="fas fa-search"></i>
+        <span>Search</span>
+      </a>
+      <a href="/about/" class="nav-item ">
+        <i class="fas fa-info-circle"></i>
+        <span>About</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  function smoothScroll(event, target) {
+    event.preventDefault();
+    const targetId = target.substring(target.indexOf('#') + 1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      window.scrollTo({
+        top: targetElement.offsetTop - 50, // 调整偏移量
+        behavior: 'smooth'
+      });
+    } else {
+      window.location.href = target;
+    }
+  }
+
+  window.addEventListener('scroll', function() {
+    const header = document.querySelector('.vs-header');
+    const nav = document.querySelector('.vs-nav');
+    const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    
+    nav.style.setProperty('--scroll-percent', `${scrollPercent}%`);
+    
+    if (window.scrollY > 0) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // 添加标签页切换动画
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      ripple.classList.add('nav-ripple');
+      this.appendChild(ripple);
+      
+      const rect = this.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      
+      setTimeout(() => ripple.remove(), 1000);
+    });
+  });
+</script>
+
+
+<div class="vscode-container">
+  <!-- 左侧资源管理器 -->
+  <div class="sidebar-explorer">
+    <!-- TOC导航 -->
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-list"></i>
+        <span>TABLE OF CONTENTS</span>
+      </div>
+      <div class="section-content">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89%E6%96%B9%E6%B3%951-%E5%9C%A8%E6%AF%8F%E6%AC%A1%E8%AF%B7%E6%B1%82%E6%97%B6%E6%A0%A1%E9%AA%8C"><span class="toc-text">（基础）方法1.在每次请求时校验</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%EF%BC%88%E8%BF%9B%E9%98%B6%EF%BC%89%E6%96%B9%E6%B3%952-%E4%BD%BF%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%99%A8%EF%BC%88event-handler%EF%BC%89"><span class="toc-text">（进阶）方法2.使用事件处理器（event handler）</span></a></li></ol>
+      </div>
+    </div>
+    
+    <!-- 相关文章 -->
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-link"></i>
+        <span>RELATED POSTS</span>
+      </div>
+      <div class="section-content">
+        
+          <div class="file">
+            <i class="fas fa-file-code"></i>
+            <a href="">Telegram机器人检测用户是否加入指定频道/群组</a>
+          </div>
+        
+          <div class="file">
+            <i class="fas fa-file-code"></i>
+            <a href="../../02/bot-speed/">浅谈如何优化机器人响应速度</a>
+          </div>
+        
+          <div class="file">
+            <i class="fas fa-file-code"></i>
+            <a href="../../01/me/">About Me</a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- 主要内容区域 -->
+  <div class="editor-content">
+    <div class="tab-bar">
+      <div class="tab active">
+        <i class="fas fa-file-alt"></i>
+        <span>Telegram机器人检测用户是否加入指定频道/群组.md</span>
+      </div>
+    </div>
+    
+    <div class="content-area">
+      <article class="post-content">
+        <div class="post-header">
+          <h1>Telegram机器人检测用户是否加入指定频道/群组</h1>
+          <div class="post-meta">
+            <span class="date">
+              <i class="fas fa-calendar-alt"></i>
+              2025-04-10
+            </span>
+            
+              <span class="categories">
+                <i class="fas fa-folder"></i>
+                <a class="category-link" href="../../../../categories/bot/">bot</a>, <a class="category-link" href="../../../../categories/bot/essay/">essay</a>
+              </span>
+            
+            
+              <span class="tags">
+                <i class="fas fa-tags"></i>
+                <a class="tag-none-link" href="../../../../tags/bot/" rel="tag">bot</a>, <a class="tag-none-link" href="../../../../tags/python/" rel="tag">python</a>, <a class="tag-none-link" href="../../../../tags/telethon/" rel="tag">telethon</a>
+              </span>
+            
+          </div>
+        </div>
+        
+        <div class="post-body vscode-markdown">
+          <h4 id="（基础）方法1-在每次请求时校验"><a href="#（基础）方法1-在每次请求时校验" class="headerlink" title="（基础）方法1.在每次请求时校验"></a>（基础）方法1.在每次请求时校验</h4><p>根据Telegram官方给出的Api，我们看到有这样一个方法</p>
+<blockquote>
+<p><strong>getChatMember</strong><br><br>Use this method to get information about a member of a chat. The method is only guaranteed to work for other users if the bot is an administrator in the chat. Returns a ChatMember object on success.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>chat_id</td>
+<td>Integer or String</td>
+<td>Yes</td>
+<td>Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>Integer</td>
+<td>Yes</td>
+<td>Unique identifier of the target user</td>
+</tr>
+</tbody></table>
+<br>
+根据这个方法，我们可以写出一个方法来检测指定用户是否加入了指定频道/群组
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">is_member</span>(<span class="hljs-params">userid</span>):<br>    user_follow_channel1, user_follow_channel2 = <span class="hljs-literal">True</span>, <span class="hljs-literal">True</span><br><br>    api = config.tg_api_url + <span class="hljs-string">f&#x27;getChatMember?chat_id=<span class="hljs-subst">&#123;config.channel1&#125;</span>&amp;user_id=<span class="hljs-subst">&#123;userid&#125;</span>&#x27;</span><br>    api2 = config.tg_api_url + <span class="hljs-string">f&#x27;getChatMember?chat_id=<span class="hljs-subst">&#123;config.channel2&#125;</span>&amp;user_id=<span class="hljs-subst">&#123;userid&#125;</span>&#x27;</span><br><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> aiohttp.ClientSession(connector=TCPConnector(ssl=<span class="hljs-literal">False</span>)) <span class="hljs-keyword">as</span> session:<br>        response = <span class="hljs-keyword">await</span> asyncio.gather(<br>            fetch(session, api),<br>            fetch(session, api2)<br>        )<br><br>    <span class="hljs-keyword">if</span> response[<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;result&#x27;</span>][<span class="hljs-string">&#x27;status&#x27;</span>] == <span class="hljs-string">&#x27;left&#x27;</span>:<br>        <span class="hljs-comment"># 用户未关注主频道</span><br>        user_follow_channel1 = <span class="hljs-literal">False</span><br>    <span class="hljs-keyword">if</span> response[<span class="hljs-number">1</span>][<span class="hljs-string">&#x27;result&#x27;</span>][<span class="hljs-string">&#x27;status&#x27;</span>] == <span class="hljs-string">&#x27;left&#x27;</span>:<br>        <span class="hljs-comment"># 用户未关注副频道</span><br>        user_follow_channel2 = <span class="hljs-literal">False</span><br>    <span class="hljs-keyword">return</span> user_follow_channel1, user_follow_channel2<br></code></pre></td></tr></table></figure>
+<p>这是最基本的实现方法，在每次触发机器人操作时，可以先进行校验，来实现强制关注频道。</p>
+<h4 id="（进阶）方法2-使用事件处理器（event-handler）"><a href="#（进阶）方法2-使用事件处理器（event-handler）" class="headerlink" title="（进阶）方法2.使用事件处理器（event handler）"></a>（进阶）方法2.使用事件处理器（event handler）</h4><p>这里我使用了<code>python3</code>的<code>telethon</code>库进行开发。<code>telethon</code>提供了丰富的事件处理器，属于一种触发器机制，可以理解为“当某个事件发生时自动触发的回调函数”。<br></p>
+<p>我们可以监听 <code>events.ChatAction</code> 事件，从而在用户加入或退出群组&#x2F;频道时做出响应。例如，记录日志、更新数据库状态、进行权限变更等等。<br></p>
+<p>下面是一个实际的监听用户加入和离开频道的示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@client.on(<span class="hljs-params">events.ChatAction</span>)</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_ChatAction</span>(<span class="hljs-params">event</span>):<br>    user_left = event.user_left<br>    user_added = event.user_added<br><br>    <span class="hljs-keyword">if</span> user_left:<br>        <span class="hljs-keyword">if</span> event.chat_id == config.channel1_id:<br>            <span class="hljs-comment"># 用户离开了主频道</span><br>            <span class="hljs-keyword">await</span> utils.user_leave_the_channel(event.user_id, config.channel1_id)<br>        <span class="hljs-keyword">elif</span> event.chat_id == config.channel2_id:<br>            <span class="hljs-comment"># 用户离开了副频道</span><br>            <span class="hljs-keyword">await</span> utils.user_leave_the_channel(event.user_id, config.channel2_id)<br>    <span class="hljs-keyword">if</span> user_added:<br>        <span class="hljs-keyword">if</span> event.chat_id == config.channel1_id:<br>            <span class="hljs-comment"># 用户加入了主频道</span><br>            <span class="hljs-keyword">await</span> utils.user_join_the_channel(event.user_id, config.channel1_id)<br>        <span class="hljs-keyword">elif</span> event.chat_id == config.channel2_id:<br>            <span class="hljs-comment"># 用户加入了副频道</span><br>            <span class="hljs-keyword">await</span> utils.user_join_the_channel(event.user_id, config.channel2_id)<br></code></pre></td></tr></table></figure>
+
+<p>在上面的代码中：</p>
+<ul>
+<li>使用 <code>@client.on(events.ChatAction)</code> 装饰器注册了一个事件监听器；</li>
+<li>当用户加入或离开指定频道时，会自动触发 <code>handle_ChatAction</code> 函数；</li>
+<li>函数内部判断了是哪个频道、用户是加入还是退出，并调用相应的处理逻辑（这里封装在 <code>utils</code> 模块中）；</li>
+</ul>
+<p>这种方式适合在用户行为变化时立即触发相应逻辑，不需要等用户主动发送消息，是一种更加“被动监听”式的方案，非常适合频道&#x2F;群组的状态同步场景。</p>
+<p>接下来，我们只需要在<code>utils.user_leave_the_channel</code>和<code>utils.user_join_the_channel</code>中将用户状态保存到表字段中即可。在需要校验时，只需要先向Telegram发送一次请求，并保存到用户表中，再次需要校验时，观察表字段即可，无需向Telegram服务器重复发送请求。</p>
+<p>当用户进行了频道操作时，例如加入&#x2F;退出频道，就会触发<code>handle_ChatAction</code>函数，并对用户状态进行更改，避免了每次校验都请求Telegram的Api。</p>
+
+        </div>
+        
+        <!-- 文章导航 -->
+        <nav class="post-nav">
+          
+          
+            <a class="next" href="../../02/bot-speed/">
+              浅谈如何优化机器人响应速度
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          
+        </nav>
+      </article>
+    </div>
+  </div>
+</div>
+
+    </div>
+    <footer class="footer">
+  <div class="status-bar">
+    <div class="status-item">
+      <i class="fas fa-code-branch"></i>
+      master
+    </div>
+    <div class="status-item">
+      <i class="fas fa-sync"></i>
+      muse
+    </div>
+    <div class="status-item">
+      <i class="fas fa-clock"></i>
+      2025-04-11
+    </div>
+    <div class="status-item">
+      Muse's blog.
+    </div>
+    <div class="status-item github">
+      <a href="https://t.me/cee3t" target="_blank">
+        <i class="fab fa-telegram"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+    
+    <!-- 全局配置 -->
+    <script>
+      window.HEXO_CONFIG = {
+        language: "en",
+        root: "/"
+      };
+      
+      // 特定于搜索的配置
+      window.VSC4T_SEARCH = {
+        root: "/"
+      };
+    </script>
+    
+    <script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/highlight.js@11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <!-- 这里可以放置自定义脚本 -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 代码高亮主题设置
+  hljs.configure({
+    theme: 'vs2015'
+  });
+  
+  // 添加平滑滚动
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth'
+      });
+    });
+  });
+});
+</script>
+<script src="../../../../js/toc.js"></script>
+
+<!-- Scripts -->
+<script>
+  // 将语言文件中的翻译传递给前端
+  window.HEXO_CONFIG = {
+    language: "en",
+    search_placeholder: "Type to search...",
+    search_no_results: "No results found",
+    search_result: "result",
+    search_results: "results",
+    search_results_found: "Found undefined results",
+    search_in: "Search in",
+    search_in_title: "Title",
+    search_in_content: "Content",
+    search_in_tags: "Tags",
+    search_in_categories: "Categories",
+    search_filters: "Search Filters",
+    search_recent: "Recent Searches",
+    search_clear: "Clear",
+    search_loading: "Loading...",
+    search_error: "Error loading search data"
+  };
+</script>
+
+
+
+<!-- 添加所有需要的脚本 -->
+<script src="../../../../js/main.js"></script>
+<script src="../../../../js/search.js"></script>
+
+    <script>
+      // 移动端菜单切换
+      $(document).ready(function() {
+        $('.mobile-menu-toggle').click(function() {
+          $('.sidebar-explorer').toggleClass('show');
+        });
+      });
+    </script>
+  </body>
+</html>
